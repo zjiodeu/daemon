@@ -1,0 +1,69 @@
+Exception::__set_state(array(
+   'message' => 'Hello World
+',
+   'string' => '',
+   'code' => 0,
+   'file' => '/home/zjiodeu/public_html/www/daemon/servers/localhostd.php',
+   'line' => 18,
+   'trace' => 
+  array (
+    0 => 
+    array (
+      'file' => '/home/zjiodeu/public_html/www/daemon/PSocket.php',
+      'line' => 82,
+      'function' => 'handleClient',
+      'class' => 'Localhostd',
+      'type' => '->',
+      'args' => 
+      array (
+        0 => NULL,
+      ),
+    ),
+    1 => 
+    array (
+      'file' => '/home/zjiodeu/public_html/www/daemon/servers/localhostd.php',
+      'line' => 23,
+      'function' => 'run',
+      'class' => 'PSocket',
+      'type' => '->',
+      'args' => 
+      array (
+      ),
+    ),
+  ),
+   'previous' => NULL,
+))Exception::__set_state(array(
+   'message' => 'ASSHOLE
+',
+   'string' => '',
+   'code' => 0,
+   'file' => '/home/zjiodeu/public_html/www/daemon/servers/localhostd.php',
+   'line' => 18,
+   'trace' => 
+  array (
+    0 => 
+    array (
+      'file' => '/home/zjiodeu/public_html/www/daemon/PSocket.php',
+      'line' => 82,
+      'function' => 'handleClient',
+      'class' => 'Localhostd',
+      'type' => '->',
+      'args' => 
+      array (
+        0 => NULL,
+      ),
+    ),
+    1 => 
+    array (
+      'file' => '/home/zjiodeu/public_html/www/daemon/servers/localhostd.php',
+      'line' => 23,
+      'function' => 'run',
+      'class' => 'PSocket',
+      'type' => '->',
+      'args' => 
+      array (
+      ),
+    ),
+  ),
+   'previous' => NULL,
+))

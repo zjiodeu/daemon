@@ -1,20 +1,38 @@
-#!/usr/bin/php -q
 <?php
 
-class PSocket {
+define('PROJECT_DIR', realpath(__DIR__));
+
+define('DS', DIRECTORY_SEPARATOR);
+
+define('LOGS_DIR', PROJECT_DIR . "/logs");
+
+require PROJECT_DIR . DS . "PDaemon.php";
+
+abstract class PSocket {
     
     protected static $_instance;
     
     protected static $_server;
     
+    protected $_name;
+    
+    protected $_log;
+    
     public $errors = array();
+    
+    protected $_daemon;
+    
+    protected $_argv = array();
     
     const MAX_CONNECTIONS = 10;
     
     
     protected function __construct() {
+        $this->_name = get_called_class();
+        $this->_log = LOGS_DIR . $this->_name . ".log";
         try {
-            $socket = '/tmp/' . __CLASS__ . ".sock";
+            $this->_daemon = new PDaemon($this->_name);
+            $socket = '/tmp/' . $this->_name . ".sock";
             if (file_exists($socket)) {
                 unlink($socket);
             }
@@ -32,25 +50,23 @@ class PSocket {
     
     public static function instance() {
         if (null === self::$_instance) {
-            self::$_instance = new self;
+            self::$_instance = new Static;
         }
         return self::$_instance;
     } 
     
-    public static function read($sock) {
-        return fgets($sock, 100);
-    }
+    abstract public static function read($sock);
     
-    public static function write($sock, $data) {
-        return fwrite($sock, $data);
-    }
+    abstract public static function write($sock, $data);
     
-
+    abstract protected function handleClient(&$client);
     
-    public function run(Closure $_callBack) {
+   
+    public function run() {
         $write = $except = null;
         $connections = $read = array();
         try {
+            $this->_daemon->daemonize();
             while (true) {
                 $read[] = self::$_server;
                 if (false === ($activeSocks = stream_select($read, $write, $except, 0, 200000))) {
@@ -59,13 +75,14 @@ class PSocket {
                 elseif ($activeSocks > 0) {
                     if (in_array(self::$_server, $read)) {
                         $connections[] = stream_socket_accept(self::$_server);
-                        echo "New connection accepted";
+                        //$this->log(new Exception("New connection accepted"));
                     }
                     foreach ($connections as $key => $client) {
                         if (in_array($client, $read)) {
-                            $_callBack($client);
-                            fclose($client);
-                            unset($connections[$key]);
+                            $this->handleClient($client);
+                            if (!is_resource($client)) {
+                                unset($connections[$key]);
+                            }
                         }
                     }
                     $read = $connections;
@@ -85,15 +102,6 @@ class PSocket {
     }
     
     protected function log(Exception $e) {
-        $this->errors[] = $e;
+        file_put_contents($this->_log, var_export($e, 1), FILE_APPEND);
     } 
 }
-/*
-$daemon = localD::instance();
-
-register_shutdown_function(function() use($daemon){
-    unset($daemon);
-});
-$daemon->run();
- * 
- */
